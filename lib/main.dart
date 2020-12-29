@@ -48,16 +48,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> requestPermission({String status = "load"}) async {
     if (_permissionStatus.isGranted) {
-      if (status == "init") await _getLocation();
+      if (status != "load") await _getLocation();
       return;
     }
 
-    final _status = await Permission.locationAlways.request();
-    setState(() {
-      _permissionStatus = _status;
-    });
+    try {
+      final _status = await Permission.location.request();
+      setState(() {
+        _permissionStatus = _status;
+      });
 
-    if (_status.isGranted && status == "init") await _getLocation();
+      if (_status.isGranted && status != "load") await _getLocation();
+    } catch (e) {}
   }
 
   void _openOnMap() async {
@@ -104,13 +106,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isShow = _position != null;
-
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: Column(
         children: <Widget>[
-          isShow
+          _position != null
               ? _getMap()
               : Container(
                   padding: EdgeInsets.all(10),
