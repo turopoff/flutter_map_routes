@@ -79,18 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var mapUrl = "http://maps.google.com/maps?${saddr}daddr=$toLat,$toLng";
 
-    _launchInWebView(mapUrl);
-  }
-
-  Future<void> _launchInWebView(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
-        url,
-        // forceSafariVC: true,
-        // forceWebView: true,
-        // headers: <String, String>{'my_header_key': 'my_header_value'},
-      );
-    }
+    if (await canLaunch(mapUrl)) await launch(mapUrl);
   }
 
   Future<void> _getLocation() async {
@@ -132,15 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Expanded(
       child: YandexMap(
         onMapCreated: (YandexMapController controller) async {
-          await controller.addPlacemark(
-            Placemark(
-              point: Point(
-                latitude: _position.latitude,
-                longitude: _position.longitude,
-              ),
-              opacity: 0.95,
-              rawImageData: rawImageData,
+          await controller.move(
+            point: Point(
+              latitude: _position.latitude,
+              longitude: _position.longitude,
             ),
+            zoom: 15,
           );
         },
       ),
